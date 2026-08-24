@@ -58,13 +58,13 @@ body{padding-bottom:calc(76px + var(--safe))}
 .streakRow{display:flex;justify-content:space-between;gap:8px;align-items:center}.streakRow b{font-size:18px}
 @media(max-width:760px){
  body{padding-bottom:calc(86px + var(--safe))}
- .app{padding:10px 10px 24px}
+ .app{padding:0 10px 24px}
  .topbar{display:none}
  .hero{display:none}
  .tabs{display:none}
  .desktopOnly{display:none!important}
  .mobileOnly{display:block}
- .todayCompactHeader{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 2px 6px}
+ .todayCompactHeader{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:calc(12px + env(safe-area-inset-top,0px)) 2px 8px}
  .todayCompactHeader .miniBrand{display:flex;align-items:center;gap:9px}.todayCompactHeader .miniBrand .logo{width:36px;height:36px;border-radius:11px}
  .todayCompactHeader b{font-size:14px}.todayCompactHeader small{display:block;color:#7f8ea1;font-size:9px;margin-top:2px}
  .todayPlan{display:block}

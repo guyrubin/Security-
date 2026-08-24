@@ -85,7 +85,12 @@ function planForDate(d){
  return {name:day===0?"SUN — Recovery + Check-in":"WED — Recovery",focus:day===0?"Steps + weekly check-in":"Steps + optional Zone 2",ids:[]};
 }
 function workoutState(date=localDateISO()){
- return JSON.parse(localStorage.getItem("mtosWorkout:"+date)||'{"done":{},"custom":[]}');
+ let state;
+ try{state=JSON.parse(localStorage.getItem("mtosWorkout:"+date)||'{"done":{},"custom":[]}')}catch(e){state={done:{},custom:[]}}
+ if(!state||typeof state!=="object")state={done:{},custom:[]};
+ if(!state.done||typeof state.done!=="object")state.done={};
+ if(!Array.isArray(state.custom))state.custom=[];
+ return state;
 }
 function saveWorkoutState(state,date=localDateISO()){localStorage.setItem("mtosWorkout:"+date,JSON.stringify(state))}
 function targetState(date=localDateISO()){return JSON.parse(localStorage.getItem("mtosTargets:"+date)||"{}")}
