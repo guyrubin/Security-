@@ -1,0 +1,185 @@
+l="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxODAgMTgwIj48cmVjdCB3aWR0aD0iMTgwIiBoZWlnaHQ9IjE4MCIgcng9IjQyIiBmaWxsPSIjMDcwOTBkIi8+PHBhdGggZD0iTTM2IDEzMlY0OGgyNWwyOSA0MiAyOS00MmgyNXY4NGgtMjVWODRsLTI5IDQyLTI5LTQydjQ4eiIgZmlsbD0iI2ZmNGQ1ZSIvPjxjaXJjbGUgY3g9IjkwIiBjeT0iOTAiIHI9IjcyIiBmaWxsPSJub25lIiBzdHJva2U9IiM1ZmU0ZmYiIHN0cm9rZS1vcGFjaXR5PSIuMzUiIHN0cm9rZS13aWR0aD0iNSIvPjwvc3ZnPg==">
+<link rel="manifest" href="./manifest.webmanifest">
+</head>
+<body>
+<div class="app">
+ <div class="topbar">
+   <div class="brand"><div class="logo">M</div><div><b>Marvel Transformation OS</b><small>Body recomposition • 2026</small></div></div>
+   <div class="countdown" id="countdown">Loading…</div>
+ </div>
+
+ <section class="hero">
+  <div class="heroGrid">
+   <div>
+    <div class="kicker">Transformation command system</div>
+    <h1>LOOK LIKE YOU<br>WERE CAST FOR IT.</h1>
+    <p>Training, nutrition, technique, recovery and progression in one operating system. Every exercise has a visual, target-muscle map, execution cues and the mistakes that waste reps.</p>
+   </div>
+   <div class="scoreRing" id="scoreRing"><div><b id="heroScore">0%</b><small>today</small></div></div>
+  </div>
+ </section>
+
+ <nav class="tabs" aria-label="Main navigation">
+  <button class="tabbtn active" data-tab="today">Today</button>
+  <button class="tabbtn" data-tab="training">Training</button>
+  <button class="tabbtn" data-tab="academy">Exercise Academy</button>
+  <button class="tabbtn" data-tab="nutrition">Nutrition</button>
+  <button class="tabbtn" data-tab="recipes">Keto Recipes</button>
+  <button class="tabbtn" data-tab="calendar">Calendar</button>
+  <button class="tabbtn" data-tab="progress">Progress</button>
+  <button class="tabbtn" data-tab="settings">Settings</button>
+ </nav>
+
+ 
+ <div class="todayCompactHeader mobileOnly">
+   <div class="miniBrand"><div class="logo">M</div><div><b>Marvel OS</b><small id="mobileDateLabel">Today</small></div></div>
+   <div class="countdown" id="mobileCountdown">—</div>
+ </div>
+
+<main>
+  <section class="tab active" id="today">
+   <div class="todayPlan">
+    <div class="workoutHero">
+      <div class="eyebrow">Today’s mission</div>
+      <h2 id="todayWorkoutTitle">Upper A — Upper Chest + Width</h2>
+      <p id="todayWorkoutText">High-value hypertrophy work. Own the eccentric, use full controlled range, finish compounds with 1–3 clean reps in reserve.</p>
+      <div class="sessionTop">
+        <div class="sessionCount"><b id="exerciseDoneCount">0</b>/<span id="exerciseTotalCount">0</span> exercises</div>
+        <div class="sessionProgress"><div id="sessionProgressBar"></div></div>
+        <div class="small" id="sessionPercent">0%</div>
+      </div>
+      <div class="exerciseList" id="todayExercises"></div><div class="nextExerciseBar" id="nextExerciseBar"></div>
+      <div class="extendBar">
+        <button class="microBtn" id="toggleAddExercise" type="button">+ Add exercise</button>
+        <button class="microBtn" id="resetWorkoutToday" type="button">Reset session</button>
+      </div>
+      <div class="extendPanel" id="addExercisePanel">
+        <div class="extendGrid">
+          <input id="customExerciseName" placeholder="Exercise name">
+          <input id="customExerciseDose" placeholder="e.g. 3×12">
+          <button class="secondary" id="addExerciseBtn" type="button">Add</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="eyebrow">Daily execution</div><h2>Only what moves the result</h2>
+      <div class="focusCard"><div class="eyebrow">Today's focus</div><b id="todayFocusLine">Upper chest + back width</b><p id="todayFocusCue">Stable setup. Full useful range. Progress only clean reps.</p></div>
+      <div class="dailyTargets" id="dailyTargets"></div><div class="quickActionStrip mobileOnly"><div class="quickAction"><span>Protein</span><b id="mobileProtein">—</b></div><div class="quickAction"><span>Calories</span><b id="mobileCalories">—</b></div><div class="quickAction"><span>Steps</span><b>8–12k</b></div><div class="quickAction"><span>Sleep</span><b>7h+</b></div></div>
+      <div class="progress" style="margin-top:14px"><div id="dailyBar"></div></div>
+      <p><b id="dailyScore">0%</b> total execution</p>
+      <button id="saveDay">Save today</button>
+      <div class="smartStrip">
+        <div><span>Training</span><b id="trainingScoreMini">0%</b></div>
+        <div><span>Targets</span><b id="targetScoreMini">0%</b></div>
+        <div><span>Phase</span><b id="phaseMini">Calibration</b></div>
+      </div>
+    </div>
+   </div>
+
+   <div class="grid" style="margin-top:15px">
+    <div class="card half"><div class="eyebrow">Current phase</div><h2 id="phaseTitle">Phase 1 — Calibration</h2><p id="phaseText"></p><div class="phaseStrip" id="phaseStrip"></div></div>
+    <div class="card half"><div class="eyebrow">The efficiency doctrine</div><h2>Every rep must earn its place</h2><div class="callout"><b>Stable setup → long useful range → controlled eccentric → hard concentric → stop when form changes.</b></div><p>More complexity is not automatically more growth. The interface follows the same principle: one object, one job.</p></div>
+   </div>
+  </section>
+
+  <section class="tab" id="training"><div class="phoneSectionTitle mobileOnly"><div class="eyebrow">Program</div><h2>Weekly training</h2></div>
+   <div class="grid">
+    <div class="card">
+     <div class="eyebrow">Weekly architecture</div><h2>4 core sessions + 1 optional visual-specialization day</h2>
+     <div id="trainingDays"></div>
+    </div>
+   </div>
+  </section>
+
+  <section class="tab" id="academy"><div class="phoneSectionTitle mobileOnly"><div class="eyebrow">Learn</div><h2>Exercise Academy</h2></div>
+   <div class="grid">
+    <div class="card">
+      <div class="eyebrow">Exercise Academy</div><h2>See it. Understand it. Execute it.</h2>
+      <p>Tap an exercise and you should be able to identify it in the gym immediately: real reference image, the exact equipment to look for, where you should feel it, setup, execution cues and rep-killing mistakes.</p>
+      <div class="filters" id="academyFilters"></div>
+      <div class="library" id="exerciseLibrary"></div>
+    </div>
+   </div>
+  </section>
+
+  <section class="tab" id="nutrition"><div class="phoneSectionTitle mobileOnly"><div class="eyebrow">Fuel</div><h2>Nutrition</h2></div>
+   <div class="grid">
+    <div class="card half">
+      <div class="eyebrow">Macro engine</div><h2>Fuel the transformation</h2>
+      <div class="inputs">
+       <div><label>Sex for equation</label><select id="sex"><option value="male">Male</option><option value="female">Female</option></select></div>
+       <div><label>Age</label><input id="age" type="number" value="40"></div>
+       <div><label>Height cm</label><input id="height" type="number" value="180"></div>
+       <div><label>Weight kg</label><input id="weight" type="number" step=".1" value="85"></div>
+       <div><label>Activity</label><select id="activity"><option value="1.35">Light</option><option value="1.5" selected>Moderate</option><option value="1.65">High</option></select></div>
+       <div><label>Deficit</label><select id="deficit"><option value=".1">10%</option><option value=".15" selected>15%</option><option value=".2">20%</option></select></div>
+       <div><label>Protein g/kg</label><select id="protein"><option>1.6</option><option selected>1.8</option><option>2.0</option></select></div>
+       <div><label>Diet mode</label><select id="dietMode"><option value="balanced">Performance balanced</option><option value="keto" selected>Keto</option></select></div>
+      </div>
+      <div style="margin-top:12px"><button id="calcMacros">Calculate & save</button></div>
+      <div class="metrics" style="margin-top:14px">
+       <div class="metric"><span>Calories</span><b id="calories">—</b></div><div class="metric"><span>Protein</span><b id="proteinOut">—</b></div>
+       <div class="metric"><span>Fat</span><b id="fatOut">—</b></div><div class="metric"><span>Carbs</span><b id="carbsOut">—</b></div>
+      </div>
+    </div>
+    <div class="card half">
+      <div class="eyebrow">Keto rules</div><h2>Low carb, high control</h2>
+      <div class="cue good"><b>Protein remains the anchor.</b><br><span class="small">Keto is not permission for unlimited fat. Calories still determine the cut.</span></div>
+      <div class="cue"><b>Net carbs: ~20–30g/day starting point.</b><br><span class="small">Use mostly vegetables, dairy and trace carbs from whole foods.</span></div>
+      <div class="cue"><b>Electrolytes matter more.</b><br><span class="small">Low-carb eating can shift water and sodium balance. Salt food normally unless medically restricted.</span></div>
+      <div class="cue"><b>Training performance is the referee.</b><br><span class="small">If repeated performance drops, sleep worsens or adherence becomes harder, use the balanced mode instead.</span></div>
+      <div class="cue bad"><b>Do not chase ketosis harder than the physique goal.</b><br><span class="small">The objective is a leaner, stronger body—not a higher ketone reading.</span></div>
+    </div>
+   </div>
+  </section>
+
+  <section class="tab" id="recipes"><div class="phoneSectionTitle mobileOnly"><div class="eyebrow">Eat</div><h2>Keto Recipes</h2></div>
+   <div class="grid">
+    <div class="card">
+      <div class="eyebrow">Recipe Lab</div><h2>Keto meals built for a cut</h2>
+      <p>High-protein, repeatable and portion-aware. Macros are approximate and depend on exact brands and weights.</p>
+      <div class="filters" id="recipeFilters"></div>
+      <div class="recipeGrid" id="recipeGrid"></div>
+    </div>
+   </div>
+  </section>
+
+
+  <section class="tab" id="calendar"><div class="phoneSectionTitle mobileOnly"><div class="eyebrow">Plan</div><h2>Calendar</h2></div>
+   <div class="calendarShell">
+    <div class="card">
+      <div class="eyebrow">Transformation calendar</div>
+      <h2>The whole program, one clean timeline</h2>
+      <div class="calendarToolbar">
+        <button class="secondary" id="calendarPrev" type="button">←</button>
+        <div class="calendarTitle" id="calendarTitle"></div>
+        <button class="secondary" id="calendarNext" type="button">→</button>
+      </div>
+      <div class="calendarWeek"><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div><div>Sun</div></div>
+      <div class="calendarGrid" id="calendarGrid"></div>
+      <div class="legendLine">
+        <span><span class="legendDot" style="background:#5bd47b"></span>complete</span>
+        <span><span class="legendDot" style="background:#f6c85f"></span>partial</span>
+        <span><span class="legendDot" style="background:#425168"></span>planned</span>
+        <span><span class="legendDot" style="background:#5fe4ff"></span>today</span>
+      </div>
+    </div>
+    <aside class="calendarSide" id="calendarSide"></aside>
+   </div>
+  </section>
+
+  <section class="tab" id="progress"><div class="phoneSectionTitle mobileOnly"><div class="eyebrow">Measure</div><h2>Progress</h2></div>
+   <div class="grid">
+    <div class="card half">
+      <div class="eyebrow">Weekly check-in</div><h2>Let trends make the decisions</h2>
+      <div class="inputs">
+       <div><label>Date</label><input id="ciDate" type="date"></div><div><label>7-day avg kg</label><input id="ciWeight" type="number" step=".1"></div>
+       <div><label>Waist cm</label><input id="ciWaist" type="number" step=".1"></div><div><label>Adherence %</label><input id="ciAdherence" type="number"></div>
+       <div><label>Performance 1–5</label><input id="ciPerformance" type="number" min="1" max="5"></div><div><label>Sleep avg h</label><input id="ciSleep" type="number" step=".1"></div>
+      </div>
+      <div style="margin-top:12px"><button id="addCheckin">Add check-in</button></div><p id="coachNote" class="small"></p>
+    </div>
+    <div class="card half">
+      <div class="eyebrow">Adjustment engine</div><h2>Do not improvise</h2>
+      
