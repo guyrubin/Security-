@@ -1,0 +1,162 @@
+textContent=Math.round(w.pct*100)+"%";
+ qs("#trainingScoreMini").textContent=Math.round(w.pct*100)+"%";qs("#targetScoreMini").textContent=Math.round(t.pct*100)+"%";
+ qs("#dailyScore").textContent=total+"%";qs("#heroScore").textContent=total+"%";qs("#dailyBar").style.width=total+"%";qs("#scoreRing").style.setProperty("--score",total);
+}
+
+function setLogKey(date=localDateISO()){return "mtosSets:"+date}
+function getSetLog(date=localDateISO()){return JSON.parse(localStorage.getItem(setLogKey(date))||"{}")}
+function saveSetLog(data,date=localDateISO()){localStorage.setItem(setLogKey(date),JSON.stringify(data))}
+function historicalSetLogs(){
+ const keys=Object.keys(localStorage).filter(k=>k.startsWith("mtosSets:")).sort();
+ return keys.map(k=>({date:k.replace("mtosSets:",""),data:JSON.parse(localStorage.getItem(k)||"{}")}));
+}
+function lastSessionForExercise(exId,beforeDate=localDateISO()){
+ const logs=historicalSetLogs().filter(x=>x.date<beforeDate&&x.data[exId]&&x.data[exId].some(s=>s.kg||s.reps));
+ return logs.length?logs.at(-1):null;
+}
+function beatTargetText(exId){
+ const last=lastSessionForExercise(exId);if(!last)return "First logged session — establish a clean baseline.";
+ const sets=last.data[exId], valid=sets.filter(s=>+s.reps>0), total=valid.reduce((a,s)=>a+(+s.reps||0),0);
+ const maxKg=Math.max(0,...valid.map(s=>+s.kg||0));
+ return maxKg?`Last: ${maxKg}kg • ${total} total reps. Beat the total cleanly before adding load.`:`Last: ${total} total reps. Beat the total with clean form.`;
+}
+function setLoggerHTML(e){
+ const date=localDateISO(),log=getSetLog(date),count=Math.max(1,parseInt(e.sets)||3);
+ const arr=log[e.id]||Array.from({length:count},()=>({kg:"",reps:"",done:false}));
+ while(arr.length<count)arr.push({kg:"",reps:"",done:false});
+ const last=lastSessionForExercise(e.id);
+ const lastText=last?last.data[e.id].filter(s=>s.kg||s.reps).map(s=>`${s.kg||"—"}kg×${s.reps||"—"}`).join(" / "):"No previous log";
+ return `<div class="setLogger">
+   <div class="lastSession"><b>LAST</b> · ${lastText}</div>
+   <div class="beatTarget"><b>TODAY:</b> ${beatTargetText(e.id)}</div>
+   <div class="setTable">
+    <div class="setHeader"><div>Set</div><div>kg</div><div>reps</div><div>✓</div></div>
+    ${arr.map((s,i)=>`<div class="setRow">
+      <div class="setNum">${i+1}</div>
+      <input inputmode="decimal" type="number" step=".5" min="0" data-setkg="${e.id}:${i}" value="${s.kg??""}" placeholder="kg">
+      <input inputmode="numeric" type="number" min="0" data-setreps="${e.id}:${i}" value="${s.reps??""}" placeholder="reps">
+      <input class="setDone" type="checkbox" data-setdone="${e.id}:${i}" ${s.done?"checked":""}>
+    </div>`).join("")}
+   </div>
+   <div class="exerciseActions"><button type="button" class="secondary saveSets" data-save-ex="${e.id}">Save sets</button><button type="button" class="ghost learnExercise" data-learn="${e.id}">Technique</button></div>
+ </div>`;
+}
+function wireSetLogger(){
+ qsa("[data-setkg],[data-setreps],[data-setdone]").forEach(el=>el.addEventListener("change",()=>{
+   const token=el.dataset.setkg||el.dataset.setreps||el.dataset.setdone,[exId,idxS]=token.split(":"),idx=+idxS,log=getSetLog();
+   if(!log[exId])log[exId]=[];while(log[exId].length<=idx)log[exId].push({kg:"",reps:"",done:false});
+   if(el.dataset.setkg)log[exId][idx].kg=el.value;
+   if(el.dataset.setreps)log[exId][idx].reps=el.value;
+   if(el.dataset.setdone)log[exId][idx].done=el.checked;
+   saveSetLog(log);
+ }));
+ qsa(".saveSets").forEach(b=>b.addEventListener("click",()=>{const exId=b.dataset.saveEx,log=getSetLog(),sets=log[exId]||[],complete=sets.length&&sets.every(s=>s.done||(+s.reps>0));
+   if(complete){const ws=workoutState();ws.done["base:"+exId]=true;saveWorkoutState(ws);renderTodaySmart();}
+ }));
+ qsa(".learnExercise").forEach(b=>b.addEventListener("click",()=>openExercise(b.dataset.learn)));
+}
+function updateNextExerciseBar(){
+ const bar=qs("#nextExerciseBar");if(!bar)return;
+ const plan=planForDate(new Date()),state=workoutState();
+ const next=plan.ids.find(id=>!state.done["base:"+id]);
+ if(!next){bar.classList.add("show");bar.innerHTML=`<div><b>Session complete</b><span>Good work. Leave the gym with something in reserve.</span></div><span>✓</span>`;return}
+ const e=exById(next);bar.classList.add("show");bar.innerHTML=`<div><span>NEXT</span><b>${e.name}</b></div><button type="button" class="secondary" id="jumpNextExercise">Open</button>`;
+ qs("#jumpNextExercise").addEventListener("click",()=>{const row=qs(`.todayRow[data-id="${next}"]`);if(row){row.classList.add("expanded");row.scrollIntoView({behavior:"smooth",block:"center"})}});
+}
+function initMobileNav(){
+ qsa("[data-mobile-tab]").forEach(b=>b.addEventListener("click",()=>{
+   const target=b.dataset.mobileTab;
+   qsa(".tabbtn").forEach(x=>x.classList.toggle("active",x.dataset.tab===target));
+   qsa(".tab").forEach(x=>x.classList.toggle("active",x.id===target));
+   qsa("[data-mobile-tab]").forEach(x=>x.classList.toggle("active",x.dataset.mobileTab===target));
+   window.scrollTo({top:0,behavior:"smooth"});
+   if(target==="calendar")renderCalendarSmart();
+ }));
+}
+function updateMobileHeader(){
+ const d=new Date();
+ if(qs("#mobileDateLabel"))qs("#mobileDateLabel").textContent=new Intl.DateTimeFormat("en",{weekday:"short",day:"numeric",month:"short"}).format(d);
+ if(qs("#mobileCountdown")){const end=new Date("2026-12-31T23:59:59"),days=Math.max(0,Math.ceil((end-d)/86400000));qs("#mobileCountdown").textContent=days+"d";}
+}
+
+function renderTodaySmart(){
+ const now=new Date(),plan=planForDate(now),state=workoutState(),date=localDateISO();
+ qs("#todayWorkoutTitle").textContent=plan.name+" — "+plan.focus;
+ qs("#todayFocusLine").textContent=plan.focus;
+ qs("#todayWorkoutText").textContent=plan.ids.length?"Click the exercise image/name to open technique. Use the checkbox only when the prescribed work is complete.":"Recovery day. Keep movement high, fatigue low, and protect the next training day.";
+ const base=plan.ids.map(id=>{const e=exById(id),key="base:"+id,done=!!state.done[key],img=(exerciseVisuals[e.id]||{}).photo;
+   return `<div class="exerciseRow todayRow ${done?"completed":""}" data-id="${id}">
+    <input class="exerciseDone" type="checkbox" data-wkey="${key}" ${done?"checked":""} aria-label="Complete ${e.name}">
+    <div class="miniVis" style="overflow:hidden">${img?`<img src="${img}" alt="" style="width:100%;height:100%;object-fit:cover">`:stickFigure(e.pattern)}</div>
+    <div class="exerciseOpen"><b>${e.name}</b><span class="small">${e.muscle} • ${(exerciseVisuals[e.id]||{}).equipment||""}</span><div class="exerciseMetaLine"><span class="pill">${e.sets} sets</span><span class="pill">${e.reps} reps</span><span class="pill">RIR ${e.rir}</span></div></div>
+    <div class="rowPrescription"><strong>${e.sets} × ${e.reps}</strong><small>RIR ${e.rir}</small></div>
+    ${setLoggerHTML(e)}
+   </div>`;
+ }).join("");
+ const custom=state.custom.map(x=>`<div class="exerciseRow todayRow customExercise ${state.done["custom:"+x.id]?"completed":""}">
+    <input class="exerciseDone" type="checkbox" data-wkey="custom:${x.id}" ${state.done["custom:"+x.id]?"checked":""}>
+    <div class="miniVis"><span style="font-size:22px">＋</span></div><div><b>${x.name}</b><span class="small">Custom exercise</span></div><div class="rowPrescription"><strong>${x.dose||"—"}</strong></div>
+   </div>`).join("");
+ qs("#todayExercises").innerHTML=base+custom;
+ qsa("#todayExercises .exerciseOpen").forEach(el=>el.addEventListener("click",()=>{
+   const row=el.closest(".todayRow"); if(row.dataset.id)row.classList.toggle("expanded");
+ }));
+ qsa("#todayExercises .miniVis").forEach(el=>{const row=el.closest(".todayRow");if(row.dataset.id)el.addEventListener("click",()=>row.classList.toggle("expanded"))});
+ wireSetLogger();updateNextExerciseBar();
+ qsa("#todayExercises input[data-wkey]").forEach(cb=>cb.addEventListener("change",()=>{
+   const s=workoutState(date);s.done[cb.dataset.wkey]=cb.checked;saveWorkoutState(s,date);renderTodaySmart();updateCalendarIfOpen();
+ }));
+ updateTodayScore();
+ const macro=JSON.parse(localStorage.getItem("mtosMacros")||"null");
+ if(macro){
+   const sex=macro.sex,age=+macro.age,h=+macro.h,w=+macro.w,af=+macro.af,def=+macro.def,pkg=+macro.pkg,mode=macro.mode;
+   const bmr=10*w+6.25*h-5*age+(sex==="male"?5:-161),cal=Math.round((bmr*af)*(1-def)/10)*10,p=Math.round(w*pkg);
+   if(qs("#mobileCalories"))qs("#mobileCalories").textContent=cal;
+   if(qs("#mobileProtein"))qs("#mobileProtein").textContent=p+"g";
+ }
+}
+function resetTodayWorkout(){
+ const s=workoutState();s.done={};saveWorkoutState(s);renderTodaySmart();updateCalendarIfOpen();
+}
+function addCustomExercise(){
+ const name=qs("#customExerciseName").value.trim(),dose=qs("#customExerciseDose").value.trim();if(!name)return;
+ const s=workoutState();s.custom.push({id:"x"+Date.now().toString(36),name,dose});saveWorkoutState(s);qs("#customExerciseName").value="";qs("#customExerciseDose").value="";renderTodaySmart();
+}
+
+let calCursor=new Date(2026,7,1),calSelected=localDateISO();
+function phaseNameFor(d){
+ if(d<new Date(2026,8,7))return "Calibration";
+ if(d<new Date(2026,9,19))return "Build + Cut";
+ if(d<new Date(2026,10,30))return "Visual Specialization";
+ if(d<new Date(2026,11,28))return "Finish";
+ return "Final";
+}
+function renderCalendarSmart(){
+ const grid=qs("#calendarGrid");if(!grid)return;
+ const y=calCursor.getFullYear(),m=calCursor.getMonth(),first=new Date(y,m,1),start=(first.getDay()+6)%7,last=new Date(y,m+1,0).getDate(),prevLast=new Date(y,m,0).getDate();
+ qs("#calendarTitle").textContent=new Intl.DateTimeFormat("en",{month:"long",year:"numeric"}).format(first);
+ const cells=[];
+ for(let i=0;i<42;i++){
+  let n,mm=m,yy=y,out=false;if(i<start){n=prevLast-start+i+1;mm=m-1;out=true}else if(i>=start+last){n=i-start-last+1;mm=m+1;out=true}else n=i-start+1;
+  const d=new Date(yy,mm,n),iso=localDateISO(d),plan=planForDate(d),w=workoutCompletion(iso),t=targetCompletion(iso),combined=Math.round((w.pct*.7+t.pct*.3)*100);
+  const inProgram=d>=new Date(2026,7,24)&&d<=new Date(2026,11,31);
+  const cls=combined>=95?"full":combined>0&&combined<95?"partial":"";
+  cells.push(`<button type="button" class="calCell ${out?"out":""} ${iso===localDateISO()?"today":""} ${iso===calSelected?"selected":""} ${cls} ${!plan.ids.length?"rest":""}" data-date="${iso}">
+    <span class="calNum">${n}</span><span class="calStatus"></span>
+    <div class="calLabel">${inProgram?plan.name.replace(" — ","<br>"):""}</div>
+    <div class="calPhase">${inProgram?phaseNameFor(d):""}</div>
+  </button>`);
+ }
+ grid.innerHTML=cells.join("");
+ qsa("#calendarGrid .calCell").forEach(c=>c.addEventListener("click",()=>{calSelected=c.dataset.date;renderCalendarSmart();renderCalendarSide(calSelected)}));
+ renderCalendarSide(calSelected);
+}
+function renderCalendarSide(iso){
+ const side=qs("#calendarSide");if(!side)return;const [y,m,d]=iso.split("-").map(Number),dt=new Date(y,m-1,d),plan=planForDate(dt),w=workoutCompletion(iso),t=targetCompletion(iso);
+ side.innerHTML=`<div class="eyebrow">${new Intl.DateTimeFormat("en",{weekday:"long",day:"numeric",month:"long"}).format(dt)}</div>
+ <h2>${plan.name}</h2><p>${plan.focus}</p>
+ <div class="calStatGrid"><div class="calStat"><span>Workout</span><b>${Math.round(w.pct*100)}%</b></div><div class="calStat"><span>Daily targets</span><b>${Math.round(t.pct*100)}%</b></div><div class="calStat"><span>Phase</span><b style="font-size:13px">${phaseNameFor(dt)}</b></div><div class="calStat"><span>Exercises</span><b>${w.done}/${w.total}</b></div></div>
+ <h3>${plan.ids.length?"Planned session":"Recovery plan"}</h3>
+ ${plan.ids.length?plan.ids.map(id=>{const e=exById(id);return `<div class="calendarExercise"><b>${e.name}</b><span>${e.sets}×${e.reps}</span></div>`}).join(""):`<div class="cue"><b>Keep it simple.</b><br><span class="small">${dt.getDay()===0?"Steps, recovery and weekly check-in.":"Steps + optional easy Zone 2. No junk fatigue."}</span></div>`}`;
+}
+function updateCalendarIfOpen(){if(qs("#calendar")&&
