@@ -1,0 +1,78 @@
+c."]},
+{name:"Chicken Caesar Power Bowl",cat:"Lunch",emoji:"🥗",kcal:520,p:58,f:28,c:9,ingredients:["220g chicken breast","romaine lettuce","20g parmesan","25g Caesar dressing","optional anchovy/lemon"],steps:["Grill seasoned chicken.","Toss lettuce with measured dressing and parmesan.","Slice chicken over bowl."]},
+{name:"Salmon, Asparagus & Lemon Mayo",cat:"Dinner",emoji:"🐟",kcal:590,p:45,f:43,c:7,ingredients:["200g salmon","250g asparagus","20g mayonnaise","lemon, dill"],steps:["Bake or pan-sear salmon.","Roast asparagus.","Mix mayo with lemon/dill and portion carefully."]},
+{name:"Greek Yogurt Keto Protein Bowl",cat:"Breakfast",emoji:"🥣",kcal:360,p:42,f:17,c:10,ingredients:["250g high-protein Greek yogurt","25g whey","15g walnuts","40g raspberries","cinnamon"],steps:["Mix whey into yogurt.","Top with measured walnuts and berries.","Add cinnamon or zero-cal sweetener if desired."]},
+{name:"Eggs, Smoked Salmon & Avocado",cat:"Breakfast",emoji:"🍳",kcal:530,p:36,f:39,c:9,ingredients:["3 eggs","100g smoked salmon","1/2 avocado","spinach","lemon"],steps:["Scramble or poach eggs.","Wilt spinach.","Serve with salmon and avocado; season with lemon."]},
+{name:"Turkey Taco Lettuce Cups",cat:"Lunch",emoji:"🌮",kcal:470,p:55,f:25,c:8,ingredients:["220g lean turkey mince","romaine leaves","30g cheddar","30g sour cream","taco spices"],steps:["Brown turkey with spices.","Spoon into lettuce leaves.","Top with measured cheese and sour cream."]},
+{name:"Beef Kofta + Tahini Cucumber",cat:"Dinner",emoji:"🧆",kcal:560,p:48,f:38,c:10,ingredients:["220g lean beef mince","parsley, cumin, paprika","cucumber","20g tahini","lemon"],steps:["Shape seasoned beef into kofta and grill.","Dice cucumber with lemon and salt.","Thin tahini with water/lemon; measure portion."]},
+{name:"Cottage Cheese Omelette",cat:"Breakfast",emoji:"🧀",kcal:420,p:46,f:25,c:7,ingredients:["3 eggs","150g cottage cheese","mushrooms","spinach","herbs"],steps:["Cook mushrooms/spinach.","Add beaten eggs.","Fold in cottage cheese and herbs."]},
+{name:"Tuna Avocado Crunch Bowl",cat:"Lunch",emoji:"🥑",kcal:450,p:45,f:27,c:9,ingredients:["1 large can tuna in water, drained","1/2 avocado","celery/cucumber","20g mayo","lemon, herbs"],steps:["Mix tuna with mayo and lemon.","Fold in chopped vegetables.","Top with avocado."]},
+{name:"Chicken Shawarma Plate — Keto",cat:"Dinner",emoji:"🍗",kcal:540,p:60,f:28,c:11,ingredients:["230g chicken thigh/breast mix","shawarma spices","cabbage salad","30g tahini sauce","pickles"],steps:["Marinate and sear chicken.","Slice over cabbage salad.","Add measured tahini and pickles; skip pita."]},
+{name:"Protein Mocha Shake",cat:"Snack",emoji:"🥤",kcal:250,p:35,f:9,c:7,ingredients:["30g whey","250ml unsweetened almond milk","espresso","10g peanut butter","ice"],steps:["Blend everything until smooth.","Use measured peanut butter.","Drink as a convenience meal, not an automatic extra."]},
+{name:"Halloumi Chicken Skewers",cat:"Lunch",emoji:"🍢",kcal:570,p:57,f:35,c:8,ingredients:["180g chicken breast","70g halloumi","zucchini/pepper","lemon, oregano"],steps:["Cube and skewer ingredients.","Grill until chicken is cooked.","Finish with lemon and herbs."]}
+];
+
+const qs=s=>document.querySelector(s), qsa=s=>[...document.querySelectorAll(s)];
+
+function muscleMap(muscle,view){
+ const m=(muscle||"").toLowerCase();
+ const active=n=>m.includes(n);
+ const chest=active("chest"), shoulders=active("shoulder")||active("delt"), back=active("back")||active("lat"),
+ arms=active("bicep")||active("tricep")||active("arm"), quads=active("quad"), glutes=active("glute"),
+ ham=active("ham"), calves=active("cal"), abs=active("ab");
+ const on="#ff4d5e", off="#394554";
+ return `<svg viewBox="0 0 120 190" aria-label="Target muscle map">
+ <circle cx="60" cy="18" r="12" fill="${off}"/>
+ <path d="M45 33 Q60 28 75 33 L82 75 Q72 88 60 88 Q48 88 38 75Z" fill="${back?on:off}"/>
+ <path d="M43 38 Q50 33 59 38 L59 59 Q50 60 43 53Z" fill="${chest?on:off}"/>
+ <path d="M61 38 Q70 33 77 38 L77 53 Q70 60 61 59Z" fill="${chest?on:off}"/>
+ <circle cx="37" cy="43" r="9" fill="${shoulders?on:off}"/><circle cx="83" cy="43" r="9" fill="${shoulders?on:off}"/>
+ <rect x="27" y="48" width="10" height="43" rx="5" fill="${arms?on:off}"/><rect x="83" y="48" width="10" height="43" rx="5" fill="${arms?on:off}"/>
+ <path d="M49 62 H71 L69 83 H51Z" fill="${abs?on:off}"/>
+ <path d="M46 84 Q60 78 74 84 L76 102 Q60 110 44 102Z" fill="${glutes?on:off}"/>
+ <rect x="43" y="100" width="14" height="48" rx="7" fill="${quads||ham?on:off}"/><rect x="63" y="100" width="14" height="48" rx="7" fill="${quads||ham?on:off}"/>
+ <rect x="45" y="148" width="10" height="32" rx="5" fill="${calves?on:off}"/><rect x="65" y="148" width="10" height="32" rx="5" fill="${calves?on:off}"/>
+ <text x="60" y="188" text-anchor="middle" fill="#77869a" font-size="8">${view==="rear"?"REAR EMPHASIS":"TARGET EMPHASIS"}</text>
+ </svg>`;
+}
+function realExerciseVisual(e){
+ const v=exerciseVisuals[e.id]||{};
+ if(v.photo){
+   return `<div class="realVisual"><img src="${v.photo}" alt="${e.name} exercise reference photo" loading="lazy" onerror="this.parentElement.innerHTML='<div class=&quot;photoFallback&quot;><b>${v.equipment||e.name}</b><span>${v.recognize||""}</span></div>'"><span class="equipmentBadge">${v.equipment||""}</span><span class="feelBadge">FEEL: ${v.feel||e.muscle}</span></div>`;
+ }
+ return `<div class="realVisual"><div class="photoFallback"><b>${v.equipment||"Gym equipment"}</b><span>${v.recognize||e.name}</span></div><span class="feelBadge">FEEL: ${v.feel||e.muscle}</span></div>`;
+}
+
+function stickFigure(pattern,big=false){
+ const w=big?420:210,h=big?300:160;
+ const primary={"press":"#ff5869","pressup":"#ff5869","pull":"#56d5ff","row":"#56d5ff","lateral":"#b996ff","fly":"#b996ff","curl":"#f5c85f","triceps":"#f5c85f","tricepsup":"#f5c85f","squat":"#5bd47b","hinge":"#5bd47b","curlleg":"#5bd47b","extendleg":"#5bd47b","split":"#5bd47b","calf":"#78df95","abs":"#ff9c5f"}[pattern]||"#56d5ff";
+ let body=`<circle cx="105" cy="29" r="13" fill="#cbd5e1"/><line x1="105" y1="42" x2="105" y2="94" stroke="#cbd5e1" stroke-width="9" stroke-linecap="round"/><line x1="105" y1="94" x2="82" y2="142" stroke="#cbd5e1" stroke-width="8" stroke-linecap="round"/><line x1="105" y1="94" x2="128" y2="142" stroke="#cbd5e1" stroke-width="8" stroke-linecap="round"/>`;
+ let motion="";
+ if(["press"].includes(pattern)){body+=`<line x1="101" y1="55" x2="72" y2="80" stroke="${primary}" stroke-width="10" stroke-linecap="round"/><line x1="109" y1="55" x2="138" y2="80" stroke="${primary}" stroke-width="10" stroke-linecap="round"/><circle cx="64" cy="87" r="9" fill="#8fa1b5"/><circle cx="146" cy="87" r="9" fill="#8fa1b5"/>`;motion=`<path d="M58 112 Q44 79 62 51" fill="none" stroke="${primary}" stroke-width="3"/><path d="M152 112 Q166 79 148 51" fill="none" stroke="${primary}" stroke-width="3"/>`}
+ else if(pattern==="pressup"){body+=`<line x1="101" y1="55" x2="82" y2="25" stroke="${primary}" stroke-width="10" stroke-linecap="round"/><line x1="109" y1="55" x2="128" y2="25" stroke="${primary}" stroke-width="10" stroke-linecap="round"/>`;motion=`<path d="M75 70 L75 26" stroke="${primary}" stroke-width="3"/><path d="M135 70 L135 26" stroke="${primary}" stroke-width="3"/>`}
+ else if(["pull","row"].includes(pattern)){body+=`<line x1="101" y1="58" x2="70" y2="55" stroke="${primary}" stroke-width="10" stroke-linecap="round"/><line x1="109" y1="58" x2="140" y2="55" stroke="${primary}" stroke-width="10" stroke-linecap="round"/>`;motion=`<path d="M40 55 L70 55" stroke="${primary}" stroke-width="3"/><path d="M170 55 L140 55" stroke="${primary}" stroke-width="3"/>`}
+ else if(["lateral","fly"].includes(pattern)){body+=`<line x1="101" y1="58" x2="55" y2="58" stroke="${primary}" stroke-width="10" stroke-linecap="round"/><line x1="109" y1="58" x2="155" y2="58" stroke="${primary}" stroke-width="10" stroke-linecap="round"/>`;motion=`<path d="M55 88 Q46 68 55 44" fill="none" stroke="${primary}" stroke-width="3"/><path d="M155 88 Q164 68 155 44" fill="none" stroke="${primary}" stroke-width="3"/>`}
+ else if(["curl","triceps","tricepsup"].includes(pattern)){body+=`<line x1="101" y1="58" x2="82" y2="92" stroke="${primary}" stroke-width="10" stroke-linecap="round"/><line x1="109" y1="58" x2="128" y2="92" stroke="${primary}" stroke-width="10" stroke-linecap="round"/>`;motion=`<path d="M76 111 Q62 92 78 70" fill="none" stroke="${primary}" stroke-width="3"/><path d="M134 111 Q148 92 132 70" fill="none" stroke="${primary}" stroke-width="3"/>`}
+ else if(["squat","split"].includes(pattern)){body=`<circle cx="105" cy="32" r="13" fill="#cbd5e1"/><line x1="105" y1="45" x2="95" y2="91" stroke="#cbd5e1" stroke-width="9" stroke-linecap="round"/><line x1="95" y1="91" x2="68" y2="116" stroke="${primary}" stroke-width="10" stroke-linecap="round"/><line x1="68" y1="116" x2="47" y2="145" stroke="${primary}" stroke-width="9" stroke-linecap="round"/><line x1="95" y1="91" x2="130" y2="110" stroke="${primary}" stroke-width="10" stroke-linecap="round"/><line x1="130" y1="110" x2="155" y2="145" stroke="${primary}" stroke-width="9" stroke-linecap="round"/>`;motion=`<path d="M178 55 L178 118" stroke="${primary}" stroke-width="3"/>`}
+ else if(pattern==="hinge"){body=`<circle cx="139" cy="47" r="13" fill="#cbd5e1"/><line x1="128" y1="58" x2="96" y2="86" stroke="#cbd5e1" stroke-width="9" stroke-linecap="round"/><line x1="96" y1="86" x2="77" y2="140" stroke="${primary}" stroke-width="10" stroke-linecap="round"/><line x1="96" y1="86" x2="120" y2="141" stroke="${primary}" stroke-width="10" stroke-linecap="round"/><line x1="111" y1="72" x2="128" y2="113" stroke="#cbd5e1" stroke-width="8" stroke-linecap="round"/>`;motion=`<path d="M70 62 Q87 42 112 45" fill="none" stroke="${primary}" stroke-width="3"/>`}
+ else if(["curlleg","extendleg","calf"].includes(pattern)){body+=`<line x1="103" y1="95" x2="76" y2="124" stroke="${primary}" stroke-width="10" stroke-linecap="round"/><line x1="107" y1="95" x2="138" y2="125" stroke="${primary}" stroke-width="10" stroke-linecap="round"/>`;motion=`<path d="M75 138 Q62 118 78 101" fill="none" stroke="${primary}" stroke-width="3"/>`}
+ else if(pattern==="abs"){body=`<circle cx="117" cy="35" r="13" fill="#cbd5e1"/><path d="M114 49 Q94 67 101 94" fill="none" stroke="${primary}" stroke-width="11" stroke-linecap="round"/><line x1="101" y1="94" x2="73" y2="135" stroke="#cbd5e1" stroke-width="9" stroke-linecap="round"/><line x1="101" y1="94" x2="132" y2="132" stroke="#cbd5e1" stroke-width="9" stroke-linecap="round"/>`;motion=`<path d="M146 50 Q126 73 126 99" fill="none" stroke="${primary}" stroke-width="3"/>`}
+ return `<svg viewBox="0 0 210 160" width="${w}" height="${h}" aria-label="Schematic movement illustration"><rect x="1" y="1" width="208" height="158" rx="16" fill="none"/><g>${body}${motion}</g><g fill="${primary}"><circle cx="105" cy="62" r="4"/></g><text x="10" y="151" fill="#6f8196" font-size="9">schematic • motion + emphasis</text></svg>`;
+}
+function exById(id){return exercises.find(e=>e.id===id)}
+function openExercise(id){
+ const e=exById(id); if(!e)return;
+ qs("#modalTitle").textContent=e.name;
+ const v=exerciseVisuals[e.id]||{};
+ qs("#modalContent").innerHTML=`<div class="detailGrid">
+ <div>${realExerciseVisual(e)}<div class="photoSource">Reference image is for exercise recognition; exact machine design can vary by gym.</div></div>
+ <div>
+   <div class="eyebrow">What you are looking for in the gym</div>
+   <h2 style="margin-top:4px">${v.equipment||e.name}</h2>
+   <p style="font-size:17px;color:#eef3f8"><b>${v.recognize||""}</b></p>
+   <div class="lookFor">
+     <div><small>Primary target</small><b>${v.feel||e.muscle}</b></div>
+     <div><small>Prescription</small><b>${e.sets} × ${e.reps}</b></div>
+     <div><small>Stop with</small><b>RIR ${e.rir}</b></div>
+   </div>
+   <div class="muscleMini">${muscleMap(v.feel||e.muscle,v.view)}<div><div class="eyebrow">FEEL IT HERE</div><div class="feel">${v.feel||e.muscle}</div><div class="avoidFeel">If you mainly feel: ${v.avo
