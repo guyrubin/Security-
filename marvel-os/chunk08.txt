@@ -1,0 +1,46 @@
+qs("#calendar").classList.contains("active"))renderCalendarSmart();}
+
+
+function initInstallCoach(){
+ const coach=qs("#installCoach"),dismiss=qs("#dismissInstall");
+ const standalone=(window.matchMedia&&window.matchMedia("(display-mode: standalone)").matches)||window.navigator.standalone===true;
+ if(!standalone && localStorage.getItem("mtosInstallCoach")!=="dismissed"){
+   setTimeout(()=>coach.classList.add("open"),350);
+ }
+ dismiss.addEventListener("click",()=>{coach.classList.remove("open");localStorage.setItem("mtosInstallCoach","dismissed")});
+}
+function exportMarvelData(){
+ const data={version:6,exported_at:new Date().toISOString(),storage:{}};
+ Object.keys(localStorage).filter(k=>k.startsWith("mtos")).forEach(k=>data.storage[k]=localStorage.getItem(k));
+ const blob=new Blob([JSON.stringify(data,null,2)],{type:"application/json"});
+ const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="marvel-os-backup-"+localDateISO()+".json";document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+ if(qs("#backupStatus"))qs("#backupStatus").textContent="Backup exported.";
+}
+function importMarvelData(file){
+ const r=new FileReader();r.onload=()=>{
+  try{const data=JSON.parse(r.result);if(!data.storage)throw new Error("Invalid backup");Object.entries(data.storage).forEach(([k,v])=>localStorage.setItem(k,v));if(qs("#backupStatus"))qs("#backupStatus").textContent="Backup imported. Reloading…";setTimeout(()=>location.reload(),500)}
+  catch(e){if(qs("#backupStatus"))qs("#backupStatus").textContent="Could not import this backup."}
+ };r.readAsText(file);
+}
+
+function init(){
+ initTabs();initMobileNav();updateMobileHeader();initInstallCoach();renderAcademy();renderTraining();renderTodaySmart();renderDailyTargets();phases();renderRecipes();loadMacros();renderCheckins();countdown();renderCalendarSmart();
+ qs("#saveDay").addEventListener("click",saveDay);qs("#calcMacros").addEventListener("click",calculate);qs("#addCheckin").addEventListener("click",addCheckin);
+ qs("#toggleAddExercise").addEventListener("click",()=>qs("#addExercisePanel").classList.toggle("open"));
+ qs("#addExerciseBtn").addEventListener("click",addCustomExercise);
+ qs("#resetWorkoutToday").addEventListener("click",resetTodayWorkout);
+ qs("#calendarPrev").addEventListener("click",()=>{calCursor=new Date(calCursor.getFullYear(),calCursor.getMonth()-1,1);renderCalendarSmart()});
+ qs("#calendarNext").addEventListener("click",()=>{calCursor=new Date(calCursor.getFullYear(),calCursor.getMonth()+1,1);renderCalendarSmart()});
+ qs("#ciDate").value=new Date().toISOString().slice(0,10);
+ qs("#closeModal").addEventListener("click",()=>qs("#exerciseModal").classList.remove("open"));qs("#exerciseModal").addEventListener("click",e=>{if(e.target===qs("#exerciseModal"))qs("#exerciseModal").classList.remove("open")});
+ qs("#exportData").addEventListener("click",exportMarvelData);
+ qs("#importData").addEventListener("change",e=>{if(e.target.files&&e.target.files[0])importMarvelData(e.target.files[0])});
+ qs("#resetData").addEventListener("click",()=>{if(confirm("Reset all locally stored Marvel Transformation data?")){["mtosDaily","mtosMacros","mtosCheckins"].forEach(k=>localStorage.removeItem(k));
+ Object.keys(localStorage).filter(k=>k.startsWith("mtosWorkout:")||k.startsWith("mtosTargets:")||k.startsWith("mtosSets:")).forEach(k=>localStorage.removeItem(k));location.reload()}});
+ document.addEventListener("keydown",e=>{if(e.key==="Escape")qs("#exerciseModal").classList.remove("open")});
+}
+init();
+if("serviceWorker" in navigator && location.protocol.startsWith("http")){navigator.serviceWorker.register("./sw.js").catch(()=>{});}
+</script>
+</body>
+</html>
