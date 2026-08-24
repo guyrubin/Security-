@@ -1,0 +1,69 @@
+<div class="cue good"><b>−0.4% to −0.8%/week + waist down + strength stable:</b> change nothing.</div>
+      <div class="cue"><b>&lt;−0.25%/week for 2 weeks with ≥85% adherence:</b> −100–150 kcal/day or +1,500 steps/day.</div>
+      <div class="cue"><b>&gt;−1.0%/week + performance falling:</b> add ~150–200 kcal/day and audit recovery.</div>
+      <div class="cue"><b>Scale flat, waist down, performance stable:</b> change nothing. Recomposition may be occurring.</div>
+    </div>
+    <div class="card"><table id="checkinTable"><thead><tr><th>Date</th><th>Weight</th><th>Waist</th><th>Adherence</th><th>Performance</th><th>Sleep</th></tr></thead><tbody></tbody></table></div>
+   </div>
+  </section>
+
+  <section class="tab" id="settings"><div class="phoneSectionTitle mobileOnly"><div class="eyebrow">Control</div><h2>Settings</h2></div>
+   <div class="grid">
+    <div class="card half"><div class="eyebrow">Data</div><h2>Your browser is the database</h2><p>All entries are stored locally in this browser. No account, no cloud sync.</p><button class="secondary" id="resetData">Reset all data</button></div>
+    <div class="card half"><div class="eyebrow">Evidence & safety</div><h2>Principles, not mythology</h2><p>The training structure follows the 2026 ACSM resistance-training position stand: consistency first, major muscle groups at least twice weekly, higher weekly volume for hypertrophy, and no requirement to use failure or complicated periodization.</p><p class="source">Technique references cross-checked against ACE Fitness exercise-library movement patterns. This artifact is educational and is not individualized medical care.</p></div>
+   </div>
+  
+<div class="card half"><div class="eyebrow">Backup</div><h2>Protect your progress</h2><p>Export your Marvel OS data periodically. The backup contains workouts, sets, targets, macros and check-ins.</p><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="secondary" id="exportData">Export backup</button><label class="secondary" style="padding:10px 14px;border-radius:11px;cursor:pointer">Import backup<input id="importData" type="file" accept="application/json" style="display:none"></label></div><p class="small" id="backupStatus"></p></div>
+
+</section>
+ </main>
+
+ <div class="footer">Marvel Transformation OS Mobile • 24 Aug–31 Dec 2026 • Built to reward execution, not obsession. Persistent pain, chest pain, fainting, unusual shortness of breath or other concerning symptoms warrant appropriate medical assessment.</div>
+</div>
+
+
+<nav class="mobileBottomNav" aria-label="Mobile navigation">
+ <button type="button" data-mobile-tab="today" class="active"><span class="navIcon">⚡</span>Today</button>
+ <button type="button" data-mobile-tab="calendar"><span class="navIcon">◫</span>Calendar</button>
+ <button type="button" data-mobile-tab="recipes"><span class="navIcon">◉</span>Food</button>
+ <button type="button" data-mobile-tab="progress"><span class="navIcon">↗</span>Progress</button>
+</nav>
+
+
+<div class="installCoach" id="installCoach">
+ <div class="installSheet">
+  <div class="eyebrow">Use it like an app</div>
+  <h2>Put Marvel OS on your Home Screen</h2>
+  <p>For the best iPhone experience, open this page in <b>Safari</b> — not inside Files.</p>
+  <div class="installSteps">
+   <div class="installStep"><b>1</b><div><strong>Open in Safari</strong><br><span class="small">If you are inside ChatGPT, use the share/open-in-browser option first.</span></div></div>
+   <div class="installStep"><b>2</b><div><strong>Tap Share</strong><br><span class="small">The square with the upward arrow.</span></div></div>
+   <div class="installStep"><b>3</b><div><strong>Add to Home Screen</strong><br><span class="small">Name it Marvel OS. From then on, launch it from the icon.</span></div></div>
+  </div>
+  <div class="installActions"><button id="dismissInstall">Got it</button></div>
+ </div>
+</div>
+
+<div class="modal" id="exerciseModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+ <div class="modalPanel">
+  <div class="modalHeader"><h2 id="modalTitle">Exercise</h2><button class="close" id="closeModal">Close</button></div>
+  <div class="modalContent" id="modalContent"></div>
+ </div>
+</div>
+
+<script>
+const exercises = [
+{id:"incline",name:"Incline Dumbbell Press",cat:"Chest",pattern:"press",muscle:"Upper chest",sets:"3",reps:"6–10",rir:"2",secondary:"Front delts • triceps",setup:["Bench around 20–35°","Feet planted; upper back set against bench","Dumbbells start near upper chest with forearms near vertical"],steps:["Lower under control toward the upper-chest line","Keep shoulder blades stable; elbows slightly below shoulder line","Press up and slightly inward without banging dumbbells together"],cues:["Think: chest up, shoulders down","Use the deepest pain-free range you can control","2–3 sec lowering is a useful default; do not turn it into an exaggerated slow-motion rep"],mistakes:["Bench too steep, turning it into a shoulder press","Elbows flared straight out","Bouncing out of the bottom","Losing ribcage/shoulder position to chase load"]},
+{id:"pulldown",name:"Neutral-Grip Lat Pulldown",cat:"Back",pattern:"pull",muscle:"Lats",sets:"3",reps:"8–12",rir:"1–2",secondary:"Biceps • upper back",setup:["Thigh pad snug","Torso tall with slight natural lean","Start with shoulders elevated, arms long"],steps:["Initiate by drawing elbows toward your hips","Bring handle toward upper chest without turning it into a row","Control the return until lats are lengthened"],cues:["Elbows to pockets","Let the shoulder blades upwardly rotate at the top","Straps can help if grip limits your back work"],mistakes:["Yanking with body momentum","Pulling behind the neck","Stopping the eccentric short","Curling the handle instead of driving elbows"]},
+{id:"machinepress",name:"Machine Chest Press",cat:"Chest",pattern:"press",muscle:"Chest",sets:"2",reps:"8–12",rir:"1–2",secondary:"Triceps • front delts",setup:["Seat so handles line with mid chest","Back and head supported","Shoulder blades comfortably set"],steps:["Press through a smooth arc","Stop short of shrugging forward","Control back into a comfortable chest stretch"],cues:["Use the machine's stability to push close to failure safely","Keep wrists stacked","Make both sides move evenly"],mistakes:["Seat too low/high","Shoulders rolling forward hard","Half reps just to move more weight"]},
+{id:"row",name:"Chest-Supported Row",cat:"Back",pattern:"row",muscle:"Upper back",sets:"3",reps:"8–12",rir:"1–2",secondary:"Lats • rear delts • biceps",setup:["Chest firmly on pad","Arms long at start","Choose grip that lets elbows travel naturally"],steps:["Pull elbows back while chest stays glued to pad","Pause briefly when upper back is shortened","Reach forward under control without losing torso support"],cues:["No torso cheating needed","Drive elbows, not hands","Use straps if grip is the limiter"],mistakes:["Lifting chest off pad","Shrugging every rep","Cutting the stretch short"]},
+{id:"lateral",name:"Cable Lateral Raise",cat:"Shoulders",pattern:"lateral",muscle:"Side delts",sets:"4",reps:"12–20",rir:"0–1",secondary:"Supraspinatus",setup:["Low cable; stand slightly away from stack","Soft elbow, wrist neutral","Arm begins slightly across body if comfortable"],steps:["Raise arm in the scapular plane","Stop around shoulder height or where tension stays clean","Lower slowly until the delt is lengthened"],cues:["Lead with the elbow","Imagine moving the arm away, not lifting the hand","Keep traps quiet; lighter weight usually wins"],mistakes:["Shrugging","Swinging torso","Internally rotating aggressively ('pouring the jug')","Using load that turns it into a full-body movement"]},
+{id:"reardelt",name:"Rear-Delt Fly",cat:"Shoulders",pattern:"fly",muscle:"Rear delts",sets:"3",reps:"12–20",rir:"1",secondary:"Upper back",setup:["Chest supported if possible","Soft elbows","Arms slightly below shoulder height"],steps:["Sweep arms out and back","Keep range where rear delts stay loaded","Return slowly into stretch"],cues:["Think wide, not back","Do not pinch shoulder blades maximally","Light load, clean arc"],mistakes:["Turning it into a row","Over-retracting shoulder blades","Using momentum"]},
+{id:"triceps",name:"Cable Triceps Pressdown",cat:"Arms",pattern:"triceps",muscle:"Triceps",sets:"2–3",reps:"10–15",rir:"1",secondary:"",setup:["Elbows near sides","Neutral torso","Cable high"],steps:["Extend elbows until arms are straight","Pause without shoulder movement","Return until forearms pass roughly parallel if comfortable"],cues:["Upper arm stays quiet","Separate rope only if it feels natural","Smooth, not ballistic"],mistakes:["Shoulders pumping","Leaning bodyweight onto cable","Partial reps"]},
+{id:"curl",name:"Incline Dumbbell Curl",cat:"Arms",pattern:"curl",muscle:"Biceps",sets:"2–3",reps:"10–15",rir:"1",secondary:"Brachialis",setup:["Bench moderately inclined","Shoulders remain behind torso","Arms hang long"],steps:["Curl without letting shoulder roll forward","Squeeze near top","Lower fully and slowly"],cues:["Own the long-muscle position","Keep upper arm quiet","Do not chase a huge dumbbell"],mistakes:["Swinging","Shoulder flexion taking over","Skipping bottom range"]},
+{id:"squat",name:"Back Squat / Hack Squat",cat:"Legs",pattern:"squat",muscle:"Quads + glutes",sets:"3",reps:"5–8",rir:"2",secondary:"Adductors • trunk",setup:["Stable stance","Brace torso","Use depth you can control without pain"],steps:["Descend between/over the hips and knees together","Keep whole foot pressure","Drive upward while knees track with toes"],cues:["Hack squat is a great substitute if it gives you more stable quad loading","Depth is earned by control, not forced","Use safeties"],mistakes:["Collapsing inward at knees","Heels lifting unintentionally","Relaxing at the bottom","Adding load faster than depth/control"]},
+{id:"rdl",name:"Romanian Deadlift",cat:"Legs",pattern:"hinge",muscle:"Hamstrings + glutes",sets:"3",reps:"6–10",rir:"2",secondary:"Spinal erectors • grip",setup:["Bar/dumbbells close to thighs","Knees softly bent","Ribs stacked over pelvis"],steps:["Push hips backward while keeping weights close","Descend until hamstrings are strongly loaded without losing neutral control","Drive hips forward to stand; do not hyperextend"],cues:["Hips back, not bar down","Shins stay relatively vertical","Stop the descent when pelvis/spine position would change"],mistakes:["Turning it into a squat","Bar drifting forward","Rounding to reach the floor","Overextending at lockout"]},
+{id:"legpress",name:"Leg Press",cat:"Legs",pattern:"squat",muscle:"Quads + glutes",sets:"2",reps:"10–15",rir:"1–2",secondary:"Adductors",setup:["Feet stable on platform","Back/pelvis supported","Choose foot position that allows pain-free depth"],steps:["Lower sled under control","Keep knees tracking with toes","Press without aggressively locking knees"],cues:["Use the machine to train hard with low coordination cost","Deep controlled range beats tiny heavy reps"],mistakes:["Pelvis rolling off pad","Knees collapsing inward","Short ROM for ego load"]},
+{id:"legcurl",name:"Leg Curl",cat:"Legs",pattern:"curlleg",muscle:"Hamstrings",sets:"2–3",reps:"10–15",rir:"1",secondary:"",setup:["Machine joint aligned near knee joint","Pad secure above heel/ankle","Hips stable"],steps:["Curl through full comfortable range","Squeeze hamstrings","Return slowly"],cues:["Do not let hips lift","Control the stretched position"],mistakes:["Jerking the weight","Hips leaving pad","Dropping eccentric"]},
+{id:"calf",name:"Standing / Seated Calf Raise",cat:"Legs",pattern:"calf",muscle:"Calves",sets:"3",reps:"8–15",rir:"1",secondary:"",setup:["Ball of foot secure","Full ankle motion available","Knee position depends on variation"],steps:["Descend into controlled stretch","Rise as high as you can without rolling ankle","Brief squeeze, then repeat"],cues:["Pause the bottom instead of bouncing","Full ROM matters more than stack weight"],mistakes:["Bouncing Achilles","Tiny reps","Ankles collapsing outward"]},
+{id:"abs",name:
