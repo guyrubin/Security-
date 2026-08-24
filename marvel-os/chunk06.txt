@@ -1,0 +1,117 @@
+id||"joints / unrelated muscles"}, reduce load and reset technique.</div></div></div>
+ </div></div>
+ <div class="detailGrid" style="margin-top:12px">
+ <div><h3>1 — Set yourself up</h3>${e.setup.map((x,i)=>`<div class="cue"><b>${i+1}.</b> ${x}</div>`).join("")}
+ <h3>2 — Do the rep</h3>${e.steps.map((x,i)=>`<div class="cue good"><b>${i+1}.</b> ${x}</div>`).join("")}</div>
+ <div><h3>Make every rep count</h3>${e.cues.map(x=>`<div class="cue">⚡ ${x}</div>`).join("")}
+ <h3>Stop doing this</h3>${e.mistakes.map(x=>`<div class="cue bad">✕ ${x}</div>`).join("")}</div>
+ </div>`;
+ qs("#exerciseModal").classList.add("open");
+}
+function initTabs(){qsa(".tabbtn").forEach(b=>b.addEventListener("click",()=>{qsa(".tabbtn").forEach(x=>x.classList.remove("active"));qsa(".tab").forEach(x=>x.classList.remove("active"));b.classList.add("active");qs("#"+b.dataset.tab).classList.add("active");window.scrollTo({top:0,behavior:"smooth"})}))}
+function renderAcademy(filter="All"){
+ const cats=["All",...new Set(exercises.map(e=>e.cat))]; qs("#academyFilters").innerHTML=cats.map(c=>`<button class="filterBtn ${c===filter?"active":""}" data-cat="${c}">${c}</button>`).join("");
+ qsa("#academyFilters button").forEach(b=>b.addEventListener("click",()=>renderAcademy(b.dataset.cat)));
+ const list=filter==="All"?exercises:exercises.filter(e=>e.cat===filter);
+ qs("#exerciseLibrary").innerHTML=list.map(e=>`<article class="exCard" data-id="${e.id}">${realExerciseVisual(e)}<div class="exBody"><h3>${e.name}</h3><div class="exMeta">${e.sets} sets • ${e.reps} reps • RIR ${e.rir}</div><p class="small"><b style="color:#eef3f8">WHAT IT IS:</b> ${(exerciseVisuals[e.id]||{}).recognize||e.cues[0]}</p></div></article>`).join("");
+ qsa(".exCard").forEach(c=>c.addEventListener("click",()=>openExercise(c.dataset.id)));
+}
+function renderTraining(){
+ qs("#trainingDays").innerHTML=days.map((d,i)=>`<div class="card" style="margin:12px 0;background:#0d141d"><div class="eyebrow">${d.focus}</div><h2>${d.name}</h2><div class="exerciseList">${d.ids.map(id=>{const e=exById(id);return `<div class="exerciseRow" data-id="${id}"><div class="miniVis" style="overflow:hidden">${(exerciseVisuals[e.id]||{}).photo?`<img src="${exerciseVisuals[e.id].photo}" alt="" style="width:100%;height:100%;object-fit:cover">`:stickFigure(e.pattern)}</div><div><b>${e.name}</b><span class="small">${e.muscle}</span></div><div><span class="pill">${e.sets}×${e.reps}</span><span class="pill">RIR ${e.rir}</span></div></div>`}).join("")}</div></div>`).join("");
+ qsa("#trainingDays .exerciseRow").forEach(r=>r.addEventListener("click",()=>openExercise(r.dataset.id)));
+}
+function todayIndex(){
+ const d=new Date().getDay(); if(d===1)return 0;if(d===2)return 1;if(d===4)return 2;if(d===5||d===6)return 3;return 4;
+}
+function renderToday(){
+ const d=days[todayIndex()];qs("#todayWorkoutTitle").textContent=d.name+" — "+d.focus;
+ qs("#todayWorkoutText").textContent=todayIndex()===4?"Recovery / optional pump day. If joints, sleep or performance are poor, walk and recover instead.":"High-value work. Click each exercise before your first session to learn the setup and cues.";
+ qs("#todayExercises").innerHTML=d.ids.map(id=>{const e=exById(id);return `<div class="exerciseRow" data-id="${id}"><div class="miniVis" style="overflow:hidden">${(exerciseVisuals[e.id]||{}).photo?`<img src="${exerciseVisuals[e.id].photo}" alt="" style="width:100%;height:100%;object-fit:cover">`:stickFigure(e.pattern)}</div><div><b>${e.name}</b><span class="small">${e.muscle}</span></div><div><span class="pill">${e.sets}×${e.reps}</span></div></div>`}).join("");
+ qsa("#todayExercises .exerciseRow").forEach(r=>r.addEventListener("click",()=>openExercise(r.dataset.id)));
+}
+function renderChecklist(){
+ const items=[["train","Training / recovery plan"],["cal","Calories ±5%"],["pro","Protein target"],["steps","8–12k steps"],["water","Hydration"],["sleep","7h+ sleep opportunity"]];
+ const key=new Date().toISOString().slice(0,10), all=JSON.parse(localStorage.getItem("mtosDaily")||"{}"), d=all[key]||{};
+ qs("#checklist").innerHTML=items.map(([k,t])=>`<label class="check"><input type="checkbox" data-key="${k}" ${d[k]?"checked":""}> ${t}</label>`).join("");
+ qsa("#checklist input").forEach(x=>x.addEventListener("change",scoreDay));scoreDay();
+}
+function scoreDay(){
+ const b=qsa("#checklist input"),s=Math.round(b.filter(x=>x.checked).length/b.length*100);qs("#dailyScore").textContent=s+"%";qs("#heroScore").textContent=s+"%";qs("#dailyBar").style.width=s+"%";qs("#scoreRing").style.setProperty("--score",s);
+}
+function saveDay(){updateTodayScore();}
+function phases(){
+ const ps=[["Calibration","24 Aug–6 Sep"],["Build + Cut","7 Sep–18 Oct"],["Visual Specialization","19 Oct–29 Nov"],["Finish","30 Nov–27 Dec"]];
+ const now=new Date(), dates=[new Date("2026-09-07"),new Date("2026-10-19"),new Date("2026-11-30"),new Date("2026-12-28")];let idx=0;if(now>=dates[0])idx=1;if(now>=dates[1])idx=2;if(now>=dates[2])idx=3;
+ qs("#phaseStrip").innerHTML=ps.map((p,i)=>`<div class="phase ${i===idx?"active":""}"><b>${i+1}. ${p[0]}</b><div class="small">${p[1]}</div></div>`).join("");
+ const texts=["Establish technique, true intake, steps and recovery. Keep 2–3 reps in reserve on most work.","Progress reps/load while cutting at a controlled pace. Keep performance as high as possible.","Extra attention to upper chest, side/rear delts, lats and arms while maintaining legs.","Preserve strength, tighten food precision and remove fatigue. No crash dieting."];
+ qs("#phaseTitle").textContent="Phase "+(idx+1)+" — "+ps[idx][0];qs("#phaseText").textContent=texts[idx];if(qs("#phaseMini"))qs("#phaseMini").textContent=ps[idx][0];
+}
+function renderRecipes(filter="All"){
+ const cats=["All",...new Set(recipes.map(r=>r.cat))];qs("#recipeFilters").innerHTML=cats.map(c=>`<button class="filterBtn ${c===filter?"active":""}" data-r="${c}">${c}</button>`).join("");qsa("#recipeFilters button").forEach(b=>b.addEventListener("click",()=>renderRecipes(b.dataset.r)));
+ const list=filter==="All"?recipes:recipes.filter(r=>r.cat===filter);
+ qs("#recipeGrid").innerHTML=list.map((r,i)=>`<article class="recipe"><div class="recipeTop"><div><div class="eyebrow">${r.cat}</div><b>${r.name}</b></div><div class="emoji">${r.emoji}</div></div><div class="recipeBody"><div class="macro"><span>${r.kcal} kcal</span><span>${r.p}g protein</span><span>${r.f}g fat</span><span>${r.c}g net-ish carbs</span></div><button class="ghost recipeToggle" style="margin-top:10px">View recipe</button><div class="recipeDetails"><h3>Ingredients</h3><ul>${r.ingredients.map(x=>`<li>${x}</li>`).join("")}</ul><h3>Method</h3><ol>${r.steps.map(x=>`<li>${x}</li>`).join("")}</ol></div></div></article>`).join("");
+ qsa(".recipeToggle").forEach(b=>b.addEventListener("click",()=>{const r=b.closest(".recipe");r.classList.toggle("open");b.textContent=r.classList.contains("open")?"Hide":"View recipe"}));
+}
+function calculate(){
+ const sex=qs("#sex").value,age=+qs("#age").value,h=+qs("#height").value,w=+qs("#weight").value,af=+qs("#activity").value,def=+qs("#deficit").value,pkg=+qs("#protein").value,mode=qs("#dietMode").value;
+ if(!age||!h||!w)return;
+ const bmr=10*w+6.25*h-5*age+(sex==="male"?5:-161),tdee=Math.round(bmr*af),cal=Math.round(tdee*(1-def)/10)*10,p=Math.round(w*pkg);let f,c;
+ if(mode==="keto"){c=30;f=Math.max(45,Math.round((cal-p*4-c*4)/9))}else{f=Math.round(w*.8);c=Math.max(0,Math.round((cal-p*4-f*9)/4))}
+ qs("#calories").textContent=cal;qs("#proteinOut").textContent=p+"g";qs("#fatOut").textContent=f+"g";qs("#carbsOut").textContent=c+"g";
+ localStorage.setItem("mtosMacros",JSON.stringify({sex,age,h,w,af,def,pkg,mode}));
+}
+function loadMacros(){const s=JSON.parse(localStorage.getItem("mtosMacros")||"null");if(s){qs("#sex").value=s.sex;qs("#age").value=s.age;qs("#height").value=s.h;qs("#weight").value=s.w;qs("#activity").value=s.af;qs("#deficit").value=s.def;qs("#protein").value=s.pkg;qs("#dietMode").value=s.mode}calculate()}
+function addCheckin(){
+ const x={date:qs("#ciDate").value,weight:+qs("#ciWeight").value,waist:+qs("#ciWaist").value,adh:+qs("#ciAdherence").value,perf:+qs("#ciPerformance").value,sleep:+qs("#ciSleep").value};if(!x.date||!x.weight)return;
+ const a=JSON.parse(localStorage.getItem("mtosCheckins")||"[]");a.push(x);a.sort((m,n)=>m.date.localeCompare(n.date));localStorage.setItem("mtosCheckins",JSON.stringify(a));renderCheckins();
+}
+function renderCheckins(){
+ const a=JSON.parse(localStorage.getItem("mtosCheckins")||"[]"),tb=qs("#checkinTable tbody");tb.innerHTML=a.slice().reverse().map(x=>`<tr><td>${x.date}</td><td>${x.weight}</td><td>${x.waist||""}</td><td>${x.adh||""}%</td><td>${x.perf||""}</td><td>${x.sleep||""}</td></tr>`).join("");
+ if(a.length<2){qs("#coachNote").textContent="Add two weekly check-ins to activate trend coaching.";return}
+ const p=a.at(-2),c=a.at(-1),pct=(c.weight-p.weight)/p.weight*100;let n;if(c.adh<80)n="Execution issue first: adherence <80%. Do not lower calories.";else if(pct>-.25)n="Slow trend. If repeated next week at ≥85% adherence, remove ~100–150 kcal OR add ~1,500 steps/day.";else if(pct<-1&&c.perf<=2)n="Fast loss + poor performance: add ~150–200 kcal and review recovery.";else n="Productive trend. Keep the plan unchanged.";qs("#coachNote").textContent=n;
+}
+function countdown(){const end=new Date("2026-12-31T23:59:59"),d=Math.max(0,Math.ceil((end-new Date())/86400000));qs("#countdown").textContent=d+" days to Dec 31";}
+
+function localDateISO(d=new Date()){
+ return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+}
+function planForDate(d){
+ const day=d.getDay();
+ if(day===1)return days[0];
+ if(day===2)return days[1];
+ if(day===4)return days[2];
+ if(day===5)return days[3];
+ if(day===6)return days[4];
+ return {name:day===0?"SUN — Recovery + Check-in":"WED — Recovery",focus:day===0?"Steps + weekly check-in":"Steps + optional Zone 2",ids:[]};
+}
+function workoutState(date=localDateISO()){
+ return JSON.parse(localStorage.getItem("mtosWorkout:"+date)||'{"done":{},"custom":[]}');
+}
+function saveWorkoutState(state,date=localDateISO()){localStorage.setItem("mtosWorkout:"+date,JSON.stringify(state))}
+function targetState(date=localDateISO()){return JSON.parse(localStorage.getItem("mtosTargets:"+date)||"{}")}
+function saveTargetState(state,date=localDateISO()){localStorage.setItem("mtosTargets:"+date,JSON.stringify(state))}
+
+function renderDailyTargets(){
+ const date=localDateISO(),state=targetState(date);
+ const items=[
+  ["cal","Calories","Stay within target ±5%","on target"],
+  ["pro","Protein","Hit calculated protein target","100%"],
+  ["steps","Steps","Movement supports the cut","8–12k"],
+  ["sleep","Sleep","Protect tomorrow's performance","7h+"]
+ ];
+ qs("#dailyTargets").innerHTML=items.map(x=>`<label class="targetRow"><input type="checkbox" data-key="${x[0]}" ${state[x[0]]?"checked":""}><span><b>${x[1]}</b><span>${x[2]}</span></span><span class="targetValue">${x[3]}</span></label>`).join("");
+ qsa("#dailyTargets input").forEach(cb=>cb.addEventListener("change",()=>{const s=targetState(date);s[cb.dataset.key]=cb.checked;saveTargetState(s,date);updateTodayScore();}));
+}
+function workoutCompletion(date=localDateISO()){
+ const [y,m,d]=date.split("-").map(Number),plan=planForDate(new Date(y,m-1,d)),state=workoutState(date);
+ const keys=plan.ids.map(id=>"base:"+id).concat(state.custom.map(x=>"custom:"+x.id));
+ const done=keys.filter(k=>state.done[k]).length;
+ return {done,total:keys.length,pct:keys.length?done/keys.length:plan.ids.length?0:1};
+}
+function targetCompletion(date=localDateISO()){
+ const s=targetState(date),keys=["cal","pro","steps","sleep"],done=keys.filter(k=>s[k]).length;return {done,total:4,pct:done/4};
+}
+function updateTodayScore(){
+ const w=workoutCompletion(),t=targetCompletion();
+ const total=Math.round((w.pct*.7+t.pct*.3)*100);
+ qs("#exerciseDoneCount").textContent=w.done;qs("#exerciseTotalCount").textContent=w.total;qs("#sessionProgressBar").style.width=Math.round(w.pct*100)+"%";qs("#sessionPercent").
